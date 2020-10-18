@@ -1,0 +1,5 @@
+{
+    "extends": [
+        "@masterodin/eslint-config-javascript"
+    ]
+}

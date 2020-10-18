@@ -1,0 +1,51 @@
+{
+  "name": "@bishopcais/discover",
+  "version": "1.0.0-dev.1",
+  "description": "Utilities for agent discovery, REST-based communication",
+  "main": "discover.js",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/bishopcais/discover"
+  },
+  "scripts": {
+    "lint": "eslint \"*.js\"",
+    "lint:fix": "eslint --fix \"*.js\"",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "contributors": [
+    {
+      "name": "Nishant Sinha"
+    },
+    {
+      "name": "Jeff Kephart"
+    },
+    {
+      "name": "Matthew Peveler",
+      "email": "matt.peveler@gmail.com"
+    }
+  ],
+  "dependencies": {
+    "@cel/restquick-nodejs-client": "^0.1.2",
+    "dotenv": "^4.0.0",
+    "lodash": "^4.14.2",
+    "request": "^2.74.0",
+    "url": "^0.11.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "devDependencies": {
+    "@masterodin/eslint-config-javascript": "^2.0.1",
+    "eslint": "^7.11.0",
+    "husky": "^4.3.0",
+    "lint-staged": "^10.4.2"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": {
+        "*.js": "node_modules/.bin/eslint --fix"
+      }
+    }
+  }
+}
