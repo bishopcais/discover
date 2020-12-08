@@ -87,7 +87,7 @@ function restQuickGet(url, cb) {
       return cb(null, httpResponse, {msg: body});
     }
 
-    if (doc.kitVersion) {
+    if (doc && doc.kitVersion) {
       if (doc.status.toLowerCase() === 'failed') {
         return cb(new Error(doc.explanation));
       }
@@ -107,7 +107,7 @@ function restQuickPost(url, data, cb) {
       return cb(err);
     }
 
-    if (resp.kitVersion) {
+    if (resp && resp.kitVersion) {
       if (resp.status.toLowerCase() === 'failed') {
         return cb(new Error(resp.explanation));
       }
