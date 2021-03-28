@@ -638,7 +638,7 @@ function getRequiredAgents (runtimeData) {
 }
 
 // ------------- Initialization : check required agents, then register -----------------
-const init = function (runtimeData) {
+function init (runtimeData) {
   getHostName(() => {
     runtimeData.hostname = GLBL.hostname || runtimeData.hostname;
     dbg('Initializing discovery ...');
@@ -659,8 +659,7 @@ const init = function (runtimeData) {
       //  installExitHandlers(); //notify lifecycle manager when the agent stops
     });
   });
-};
-
+}
 
 function testRoute(req, res) {
   if (res) {
@@ -736,42 +735,48 @@ function installExitHandlers() {
 const allModules = {
   getURL: getURL,
 
+
+function setLCManagerDiscover (coords) {
+  LCManagerDiscover = coords;
+  return;
+}
+
+function getLCManagerDiscover () {
+  return LCManagerDiscover;
+}
+
+function setLCManagerRegister(coords) {
+  LCManagerRegister = coords;
+  return;
+}
+function getLCManagerRegister () {
+  return LCManagerRegister;
+}
+
+const allModules = {
+  getURL,
   // register does not check for required agents dependencies
-  register: register,
+  register,
   // if 'register' explicitly (not call 'init'), then must 'unregister' explicitly
-  unregister: unregister,
+  unregister,
   // check required agents are alive, install exit handlers, then register
-  init: init,
-
-  findAgent: findAgent,
-  getDataFromServiceType: getDataFromServiceType,
-  postDataToService: postDataToService,
-  postDataToServiceType: postDataToServiceType,
-  putDataToService: putDataToService,
-  putDataToServiceType: putDataToServiceType,
-  deleteDataFromService: deleteDataFromService,
-  deleteDataFromServiceType: deleteDataFromServiceType,
-
-  checkRequiredAgents: checkRequiredAgents,
-
-  installExitHandlers: installExitHandlers,
-  installExpressRoutes: installExpressRoutes,
-  testRoute: testRoute,
-
-  setLCManagerDiscover: function (coords) {
-    LCManagerDiscover = coords;
-  },
-
-  getLCManagerDiscover: function () {
-    return LCManagerDiscover;
-  },
-
-  setLCManagerRegister: function (coords) {
-    LCManagerRegister = coords;
-  },
-  getLCManagerRegister: function () {
-    return LCManagerRegister;
-  },
+  init,
+  findAgent,
+  getDataFromServiceType,
+  postDataToService,
+  postDataToServiceType,
+  putDataToService,
+  putDataToServiceType,
+  deleteDataFromService,
+  deleteDataFromServiceType,
+  checkRequiredAgents,
+  installExitHandlers,
+  installExpressRoutes,
+  testRoute,
+  setLCManagerDiscover,
+  setLCManagerRegister,
+  getLCManagerDiscover,
+  getLCManagerRegister,
 };
 
 function exportFn (runtimeData) {
