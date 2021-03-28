@@ -669,6 +669,27 @@ function testRoute(req, res) {
   return;
 }
 
+const defaultHardShutdownDuration = 4000;
+const defaultSoftShutdownDuration = 2000;
+function terminate(srvr, hardShutdownDuration, softShutdownDuration, cb) {
+  hardShutdownDuration = hardShutdownDuration || defaultHardShutdownDuration;
+  softShutdownDuration = softShutdownDuration || defaultSoftShutdownDuration;
+  notifyStopping(() => {
+    setTimeout(() => {
+      srvr.close(() => {
+        if (cb) {
+          cb('Soft shutdown');
+        }
+      });
+    }, softShutdownDuration);
+    setTimeout(() => {
+      if (cb) {
+        cb('Forced shutdown');
+      }
+    }, hardShutdownDuration);
+  });
+}
+
 /**
  *
  * @param {Express} app
@@ -732,9 +753,20 @@ function installExitHandlers() {
   });
 }
 
-const allModules = {
-  getURL: getURL,
+function installTerminationRoutes(app, server) {
+  dbg('*** installing termination routes ***');
+  if (!app || !app.post) {
+    return;
+  }
 
+  app.post('/terminate', (req, res) => {
+    terminate(server, null, null, msg => {
+      console.log(msg);
+      res.json({msg: msg});
+      process.exit(0);
+    });
+  });
+}
 
 function setLCManagerDiscover (coords) {
   LCManagerDiscover = coords;
@@ -749,6 +781,7 @@ function setLCManagerRegister(coords) {
   LCManagerRegister = coords;
   return;
 }
+
 function getLCManagerRegister () {
   return LCManagerRegister;
 }
@@ -772,7 +805,9 @@ const allModules = {
   checkRequiredAgents,
   installExitHandlers,
   installExpressRoutes,
+  installTerminationRoutes,
   testRoute,
+  terminate,
   setLCManagerDiscover,
   setLCManagerRegister,
   getLCManagerDiscover,
