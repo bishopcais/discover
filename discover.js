@@ -262,7 +262,7 @@ function checkRequiredAgents(requiredAgents, callback) {
 
 // ------ Registering myself -----------
 
-//fname = 'package.json' or 'register.json'
+//fname = 'package.json' or 'appSettings.json'
 //obj_path = 'register' or 'null'
 //fields = undefined or null or [] or ['a', 'b', ...]
 
@@ -291,16 +291,16 @@ function getFileDataFields (fname, objPath, fields) {
 }
 
 function getStaticData () {
-  let data = getFileDataFields('package.json', 'register');
+  let data = getFileDataFields('appSettings.json', 'register');
   if (data === undefined || _.isEmpty(data)) {
-    data = getFileDataFields('register.json');
+    data = getFileDataFields('package.json', 'register');
     if (data) {
-      console.log('Deprecated (register.json). Please move registration information to (package.json).');
+      console.log('Getting registration information from package.json.');
     }
   }
 
   if (!data) {
-    console.log('Need a valid (package.json) for registering each module.');
+    console.log('Need valid register data in either package.json or appSettings.json.');
     process.exit(1);
   }
   //Support .env file
@@ -325,7 +325,7 @@ function getStaticData () {
 }
 
 
-//obtain static data from 'package.json'
+//obtain static data from package.json or appSettings.json
 //merge with all runtimeData
 function getRegisterData (runtimeData) {
   const staticData = getStaticData();
@@ -620,15 +620,15 @@ function getRequiredAgents (runtimeData) {
     requiredAgents = runtimeData.requiredAgents;
   }
   else {
-    const data = getFileDataFields('package.json', 'register', ['requiredAgents']);
-    if (data) {
-      requiredAgents = data.requiredAgents || [];
+    let data = getFileDataFields('appSettings.json', 'register', ['requiredAgents']);
+    if (!data || _.isEmpty(data)) {
+      data = getFileDataFields('package.json', 'register', ['requiredAgents']);
     }
+    requiredAgents = data.requiredAgents || [];
   }
 
   return requiredAgents;
 }
-
 
 // ------------- Initialization : check required agents, then register -----------------
 const init = function (runtimeData) {
