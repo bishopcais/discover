@@ -742,7 +742,7 @@ function installExpressRoutes (app) {
 }
 
 function installExitHandlers() {
-  dbg('*** installing exit handlers *****');
+  dbg('*** installing exit handlers ***');
   process.on('beforeExit', notifyStopping);
 
   process.on('uncaughtException', (err) => {
