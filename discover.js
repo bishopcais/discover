@@ -1,5 +1,7 @@
 'use strict';
 
+const dotenv = require('dotenv')
+const fs = require('fs');
 const request = require('request');
 const os = require('os');
 const _ = require('lodash');
@@ -164,7 +166,6 @@ function getURL(options, onResult) {
 }
 
 function loadJSONSync(filename) {
-  const fs = require('fs');
   try {
     let wdir = process.env.PWD;
     if (!wdir) {
@@ -304,7 +305,7 @@ function getStaticData () {
     process.exit(1);
   }
   //Support .env file
-  const envLoaded = require('dotenv').load({silent: true});
+  const envLoaded = dotenv.load({silent: true});
 
   if (!envLoaded) {
     console.log('warning:', __filename, '.env cannot be found');
