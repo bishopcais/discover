@@ -187,7 +187,7 @@ function findAgent(serviceType, callback) {
     }
   }
   const options = LCManagerDiscover;
-  options.path = `/query/?serviceType=${serviceType}&status=responsive`;
+  options.path = `/query/?serviceType=${serviceType}&status=Responsive`;
   getURL(options, (err, docs) => {
     if (!err && docs) {
       if (docs.length === 0) {
