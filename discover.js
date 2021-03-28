@@ -390,7 +390,7 @@ function getRegisterData (runtimeData) {
 
 }
 
-function registerAction (registerString, runtimeData) {
+function registerAction (registerString, runtimeData, cb) {
   const registerData = getRegisterData(runtimeData);
   dbg('registerData = ', registerData);
   dbg('registerString = ', registerString);
@@ -410,9 +410,15 @@ function registerAction (registerString, runtimeData) {
     dbg('post result = ', result);
     if (!err) {
       dbg(`success: post register_action : ${registerString}`);
+      if (cb) {
+        cb();
+      }
     }
     else {
       dbg(`Error: post register_action: ${err.message}`);
+      if (cb) {
+        cb();
+      }
     }
   });
 }
@@ -420,18 +426,19 @@ function registerAction (registerString, runtimeData) {
 // cache of runtime data passed in when registering
 let _runtimeData;
 
-function register (runtimeData) {
-  _runtimeData = runtimeData; registerAction('register', _runtimeData);
+function register (runtimeData, cb) {
+  _runtimeData = runtimeData;
+  registerAction('register', _runtimeData, cb);
 }
 
-function unregister (runtimeData) {
+function unregister (runtimeData, cb) {
   runtimeData = runtimeData || _runtimeData;
-  registerAction('unregister', runtimeData);
+  registerAction('unregister', runtimeData, cb);
 }
 
-function notifyStopping () {
+function notifyStopping (cb) {
   dbg('** now stopping ***');
-  registerAction('stopping', _runtimeData);
+  registerAction('stopping', _runtimeData, cb);
 }
 
 // ------------- POSTING Data to an agent -----------------
