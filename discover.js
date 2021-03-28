@@ -1,6 +1,6 @@
 'use strict';
 
-const dotenv = require('dotenv')
+const dotenv = require('dotenv');
 const fs = require('fs');
 const request = require('request');
 const os = require('os');
@@ -71,7 +71,7 @@ function options2URL(options) {
   return url;
 }
 
-function restQuickGet(url, cb) {
+function requestGet(url, cb) {
   //response is the whole response, body is the core part
   request.get(url, (err, httpResponse, body) => {
     if (!cb) {
@@ -81,39 +81,24 @@ function restQuickGet(url, cb) {
       return cb(err);
     }
 
-    let doc;
     try {
-      doc = JSON.parse(body);
+      JSON.parse(body);
     }
     catch (e) {
       return cb(null, httpResponse, {msg: body});
-    }
-
-    if (doc && doc.kitVersion) {
-      if (doc.status.toLowerCase() === 'failed') {
-        return cb(new Error(doc.explanation));
-      }
-      return cb(null, doc, JSON.stringify(doc.result));
     }
 
     cb(null, httpResponse, body);
   });
 }
 
-function restQuickPost(url, data, cb) {
+function requestPost(url, data, cb) {
   request.post(url, data, (err, resp) => {
     if (!cb) {
       return;
     }
     if (err) {
       return cb(err);
-    }
-
-    if (resp && resp.kitVersion) {
-      if (resp.status.toLowerCase() === 'failed') {
-        return cb(new Error(resp.explanation));
-      }
-      resp.isRQ = true;
     }
 
     cb(null, resp);
@@ -123,7 +108,7 @@ function restQuickPost(url, data, cb) {
 function getURL(options, onResult) {
   const url = options2URL(options);
 
-  restQuickGet(url, (err, response, body) => {
+  requestGet(url, (err, response, body) => {
     if (!err) {
       //400 or 500 error occurred, so this really should be treated as error
       if (response.statusCode >=400 && response.statusCode <=599) {
@@ -404,7 +389,7 @@ function registerAction (registerString, runtimeData, cb) {
   const url = options2URL(options);
 
   //post to url
-  restQuickPost(url, {
+  requestPost(url, {
     json: true,
     body: registerData,
   }, (err, result) => {
@@ -449,18 +434,14 @@ function notifyStopping (cb) {
 function postDataToService(data, options, callback) {
   const url = options2URL(options);
 
-  //    console.log('postDataToService: Posting to URL ' + url)
-  restQuickPost(url, {json: true, body: data}, (err, response) => {
+  // console.log('postDataToService: Posting to URL ' + url)
+  requestPost(url, {json: true, body: data}, (err, response) => {
     if (!err) {
       if (response.statusCode < 400 || response.statusCode > 599) {
         let body = null;
         // compatible with node-request
         if (response && response.body) {
           body = response.body;
-        }
-        // compatible with rest-quick
-        if (response && response.isRQ && response.result) {
-          body = response.result;
         }
         // doc = actual data. response = full msg
         if (callback) {
@@ -497,10 +478,6 @@ function deleteDataFromService(data, options, callback) {
           if (result && result.body) {
             body = result.body;
           }
-          // compatible with rest-quick
-          if (result && result.isRQ && result.result) {
-            body = result.result;
-          }
           // body = actual data. result = full msg
           if (callback) {
             callback(null, body, result);
@@ -536,10 +513,6 @@ function putDataToService(data, options, callback) {
           // compatible with node-request
           if (result && result.body) {
             body = result.body;
-          }
-          // compatible with rest-quick
-          if (result && result.isRQ && result.result) {
-            body = result.result;
           }
           // doc = actual data. result = full msg
           if (callback) {
